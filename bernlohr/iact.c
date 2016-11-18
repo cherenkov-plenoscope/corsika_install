@@ -434,32 +434,62 @@ char acp_out_path[1024] = "/home/sebastian/Desktop/explore_corsika/output/";
 void telfil_(char *name);
 void telsmp_(char *name);
 void telshw_(void);
-void telinf_(int *itel, 
-   double *x, double *y, double *z, double *r, int *exists);
+void telinf_(
+   int *itel, 
+   double *x, 
+   double *y, 
+   double *z, 
+   double *r, 
+   int *exists);
 void tellni_(char *line, int *llength); 
 void telrnh_(cors_real_t runh[273]);
 void telrne_(cors_real_t rune[273]);
-void telasu_(int *n, cors_real_dbl_t *dx, cors_real_dbl_t *dy);
-void telset_(cors_real_now_t *x, cors_real_now_t *y, 
-   cors_real_now_t *z, cors_real_now_t *r);
-void televt_(cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]);
-int telout_(cors_real_now_t *bsize, cors_real_now_t *wt, 
-   cors_real_now_t *px, cors_real_now_t *py, cors_real_now_t *pu, 
-   cors_real_now_t *pv, cors_real_now_t *ctime, 
-   cors_real_now_t *zem, cors_real_now_t *lambda
+void telasu_(
+   int *n, 
+   cors_real_dbl_t *dx, 
+   cors_real_dbl_t *dy);
+void telset_(
+   cors_real_now_t *x, 
+   cors_real_now_t *y, 
+   cors_real_now_t *z, 
+   cors_real_now_t *r);
+void televt_(
+   cors_real_t evth[273], 
+   cors_real_dbl_t prmpar[PRMPAR_SIZE]);
+int telout_(
+   cors_real_now_t *bsize, 
+   cors_real_now_t *wt, 
+   cors_real_now_t *px, 
+   cors_real_now_t *py, 
+   cors_real_now_t *pu, 
+   cors_real_now_t *pv, 
+   cors_real_now_t *ctime, 
+   cors_real_now_t *zem, 
+   cors_real_now_t *lambda
 #ifdef EXTENDED_TELOUT
-   , double *temis, double *penergy, double *amass, double *charge
+   , double *temis, 
+   double *penergy, 
+   double *amass, 
+   double *charge
 #endif
    );
 #ifdef IACTEXT
 void telprt_ (cors_real_t* datab, int *maxbuf);
 #endif
-void tellng_ (int *type, double *data, int *ndim, int *np, 
-   int *nthick, double *thickstep);
+void tellng_ (
+   int *type, 
+   double *data, 
+   int *ndim, 
+   int *np, 
+   int *nthick, 
+   double *thickstep);
 void telend_(cors_real_t evte[273]);
 
-void extprm_ (cors_real_dbl_t *type, cors_real_dbl_t *eprim,
-   double *thetap, double *phip);
+void extprm_ (
+   cors_real_dbl_t *type, 
+   cors_real_dbl_t *eprim,
+   double *thetap, 
+   double *phip);
 
 /* CORSIKA function called from this module: */
 extern double heigh_ (double *thickness);
