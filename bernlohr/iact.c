@@ -562,18 +562,6 @@ static void cross_prod (double *v1, double *v2, double *v3)
    v3[1] = v1[2]*v2[0] - v1[0]*v2[2];
    v3[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
-#if 0
-/** Cross (outer) product of two normalized 3-D vectors */
-static void cross_prod_norm (double *v1, double *v2, double *v3);
-static void cross_prod_norm (double *v1, double *v2, double *v3)
-{
-   double n1 = sqrt(v1[0]*v1[0]+v1[1]*v1[1]+v1[2]*v1[2]);
-   double n2 = sqrt(v2[0]*v2[0]+v2[1]*v2[1]+v2[2]*v2[2]);
-   v3[0] = (v1[1]*v2[2] - v1[2]*v2[1]) / (n1*n2);
-   v3[1] = (v1[2]*v2[0] - v1[0]*v2[2]) / (n1*n2);
-   v3[2] = (v1[0]*v2[1] - v1[1]*v2[0]) / (n1*n2);
-}
-#endif
 
 /* ================================================================== */
 
