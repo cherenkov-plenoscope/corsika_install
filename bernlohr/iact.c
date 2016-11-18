@@ -178,7 +178,7 @@ extern double heigh_ (double *thickness);
 /* The ACP */
 
 FILE *acp_photon_block;
-char acp_out_path[1024] = "/home/sebastian/Desktop/explore_corsika/output/";
+char acp_out_path[1024] = "";
 struct Plenoscope {
    double x;
    double y;
@@ -201,6 +201,7 @@ struct Plenoscope plenoscope;
 */
 
 void telfil_ (char *name) {
+   strcpy(acp_out_path, name);
    return;
 }
 
@@ -254,7 +255,8 @@ void telinf_ (
    double *r, 
    int *exists
 ) {
-   if ( *itel <= 0 || *itel > 1 )
+   printf("777777777777 CORSIKA ASKS FOR TELESCOPES 7777777777777777777777777");
+   if ( *itel <= 0 || *itel > 0 )
    {
       *exists = 0;
       *x = *y = *z = *r = 0.;
@@ -292,7 +294,7 @@ void telrnh_ (cors_real_t runh[273]) {
 
    char runh_path[1024];
    strcpy(runh_path, acp_out_path);
-   strcat(runh_path, "acp_out.runh.bin");
+   strcat(runh_path, ".runh.acp");
    acp_run_header = fopen(runh_path, "wb");
    fwrite(&runh, sizeof(cors_real_t), 273, acp_run_header);
    fclose(acp_run_header);
@@ -399,18 +401,18 @@ void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
    sprintf(evt_num, "%d", (int)evth[2-1]);
    char evth_path[1024];
    strcpy(evth_path, acp_out_path);
-   strcat(evth_path, "acp_out.evth.");
+   strcat(evth_path, ".evth.");
    strcat(evth_path, evt_num);
-   strcat(evth_path, ".bin");
+   strcat(evth_path, ".acp");
    acp_evt_header = fopen(evth_path, "wb");
    fwrite(&evth, sizeof(cors_real_t), 273, acp_evt_header);
    fclose(acp_evt_header);
 
    char photon_block_path[1024];
    strcpy(photon_block_path, acp_out_path);
-   strcat(photon_block_path, "acp_out.photons.");
+   strcat(photon_block_path, ".photons.");
    strcat(photon_block_path, evt_num);
-   strcat(photon_block_path, ".bin");   
+   strcat(photon_block_path, ".acp");   
    acp_photon_block = fopen(photon_block_path, "wb");
 }
 
