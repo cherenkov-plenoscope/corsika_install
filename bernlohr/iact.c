@@ -1680,9 +1680,12 @@ void telasu_ (int *n, cors_real_dbl_t *dx, cors_real_dbl_t *dy)
  *
 */
 
-void telset_ (cors_real_now_t *x, cors_real_now_t *y, 
-   cors_real_now_t *z, cors_real_now_t *r)
-{
+void telset_ (
+   cors_real_now_t *x, 
+   cors_real_now_t *y, 
+   cors_real_now_t *z, 
+   cors_real_now_t *r
+) {
    int itel;
    double d;
    
