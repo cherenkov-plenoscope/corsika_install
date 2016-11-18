@@ -423,6 +423,9 @@ static double lambda1, lambda2;
 #define GRID_SIZE 1000  /**< unit: cm */
 
 
+//ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+FILE *acp_photon_block;
+char acp_out_path[1024] = "/home/sebastian/Desktop/explore_corsika/output/";
 /* =============================================================== */
 
 /* FORTRAN called functions (beware changes of parameter types !!) */
@@ -1050,6 +1053,16 @@ static int expand_env (char *fname, size_t maxlen)
 
 void telrnh_ (cors_real_t runh[273])
 {
+   //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+   FILE *acp_run_header;
+
+   char runh_path[1024];
+   strcpy(runh_path, acp_out_path);
+   strcat(runh_path, "acp_out.runh.bin");
+   acp_run_header = fopen(runh_path, "wb");
+   fwrite(&runh, sizeof(cors_real_t), 273, acp_run_header);
+   fclose(acp_run_header);
+
 #ifdef HAVE_EVENTIO_FUNCTIONS
    struct stat st;
    char tmp_fname[1024];
@@ -1583,6 +1596,9 @@ static void iact_param (char *text)
 
 void telrne_ (cors_real_t rune[273])
 {
+   //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+   fclose(acp_photon_block);
+
 #ifdef HAVE_EVENTIO_FUNCTIONS
     if ( write_tel_block(iobuf,IO_TYPE_MC_RUNE,(int)rune[1],rune,3) != 0 )
        ioerrorcheck();
@@ -1969,6 +1985,27 @@ printf(" Particle type %d, mass = %f GeV/c^2, E= %g GeV, gamma = %f (%f), distan
 
 void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE])
 {
+
+   //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+   FILE *acp_evt_header;
+   char evt_num[1024];
+   sprintf(evt_num, "%d", (int)evth[2-1]);
+   char evth_path[1024];
+   strcpy(evth_path, acp_out_path);
+   strcat(evth_path, "acp_out.evth.");
+   strcat(evth_path, evt_num);
+   strcat(evth_path, ".bin");
+   acp_evt_header = fopen(evth_path, "wb");
+   fwrite(&evth, sizeof(cors_real_t), 273, acp_evt_header);
+   fclose(acp_evt_header);
+
+   char photon_block_path[1024];
+   strcpy(photon_block_path, acp_out_path);
+   strcat(photon_block_path, "acp_out.photons.");
+   strcat(photon_block_path, evt_num);
+   strcat(photon_block_path, ".bin");   
+   acp_photon_block = fopen(photon_block_path, "wb");
+
 #ifdef HAVE_EVENTIO_FUNCTIONS
    static int telpos_written = 0;
 #endif
@@ -2825,6 +2862,45 @@ int telout_ (cors_real_now_t *bsize, cors_real_now_t *wt,
 #endif
    )
 {
+   /*
+   struct {
+      short x;                   // 0
+      short y;                   // 1
+      short cx;                  // 2
+      short cy;                  // 3
+      short arrival_time;        // 4
+      short emission_altitude;   // 5
+      short wavelength;          // 6
+      short mother_charge;       // 7
+   } acp_bunch;
+   */
+   //ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ
+   struct {
+      float size;
+      float x;
+      float y;
+      float cx;
+      float cy;
+      float arrival_time;
+      float emission_altitude;
+      float wavelength;
+      float mother_mass;
+      float mother_charge;
+   } bunch;
+
+   bunch.size = *bsize;
+   bunch.x = *px;
+   bunch.y = *py;   
+   bunch.cx = *pu;
+   bunch.cy = *pv;
+   bunch.arrival_time = *ctime;
+   bunch.emission_altitude = *zem; 
+   bunch.wavelength = *lambda;
+   bunch.mother_mass = *amass;
+   bunch.mother_charge = *charge; 
+
+   fwrite(&bunch, sizeof(bunch), 1, acp_photon_block);
+
    int ix, iy, igrid, rc, kdet, idet, iarray;
    double x = *px - impact_offset[0], y = *py - impact_offset[1];
    double u = *pu, v = *pv, sx, sy;
