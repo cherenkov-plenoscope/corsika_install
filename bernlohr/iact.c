@@ -104,6 +104,7 @@ extern double heigh_ (double *thickness);
 /* =============================================================== */
 /* The ACP */
 
+int SEED = -1;
 FILE *acp_photon_block;
 char acp_out_path[1024] = "";
 struct Plenoscope {
@@ -212,10 +213,12 @@ void telinf_ (
 
 void telrnh_ (cors_real_t runh[273]) {
 
+   SEED = (int)runh[(11+3*1)-1];
+
    plenoscope.x = 0.0;
    plenoscope.y = 0.0;
    plenoscope.z = 0.0;
-   plenoscope.radius = 55.0;
+   plenoscope.radius = 55.0e2;
 
    FILE *acp_run_header;
 
@@ -274,8 +277,7 @@ void telrne_ (cors_real_t rune[273]) {
  *
 */
 
-void telasu_ (int *n, cors_real_dbl_t *dx, cors_real_dbl_t *dy)
-{
+void telasu_ (int *n, cors_real_dbl_t *dx, cors_real_dbl_t *dy) {
    return;
 }
 
@@ -341,21 +343,6 @@ void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
    strcat(photon_block_path, evt_num);
    strcat(photon_block_path, ".acp");   
    acp_photon_block = fopen(photon_block_path, "wb");
-}
-
-/* -------------------------- Nint_f ------------------------- */
-/**
- *
- *  Nearest integer function
- *
-*/
-
-static int Nint_f(double x)
-{
-   if ( x >= 0. )
-      return (int)(x+0.5);
-   else
-      return (int)(x-0.5);
 }
 
 
@@ -444,7 +431,9 @@ int telout_ (
    bunch.mother_mass = *amass;
    bunch.mother_charge = *charge; 
 
-   fwrite(&bunch, sizeof(bunch), 1, acp_photon_block);
+   double dist = sqrt(bunch.x*bunch.x + bunch.y*bunch.y);
+   if(dist <= plenoscope.radius)
+      fwrite(&bunch, sizeof(bunch), 1, acp_photon_block);
 }
 
 /* --------------------------- telprt_ ------------------------- */
@@ -461,8 +450,7 @@ int telout_ (
  *                option and 39*8 with thinning.
  */
 
-void telprt_ (cors_real_t *datab, int *maxbuf)
-{
+void telprt_ (cors_real_t *datab, int *maxbuf) {
    return;
 }
 
