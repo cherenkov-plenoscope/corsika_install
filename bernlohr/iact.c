@@ -193,7 +193,7 @@ void telrnh_ (cors_real_t runh[273]) {
 
    char runh_path[1024];
    strcpy(runh_path, acp_out_path);
-   strcat(runh_path, ".runh.acp");
+   strcat(runh_path, ".runh");
    acp_run_header = fopen(runh_path, "wb");
    fwrite(&runh, sizeof(cors_real_t), 273, acp_run_header);
    fclose(acp_run_header);
@@ -271,7 +271,6 @@ void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
    strcpy(evth_path, acp_out_path);
    strcat(evth_path, ".evth.");
    strcat(evth_path, evt_num);
-   strcat(evth_path, ".acp");
    acp_evt_header = fopen(evth_path, "wb");
    fwrite(&evth, sizeof(cors_real_t), 273, acp_evt_header);
    fclose(acp_evt_header);
@@ -279,8 +278,7 @@ void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
    char photon_block_path[1024];
    strcpy(photon_block_path, acp_out_path);
    strcat(photon_block_path, ".photons.");
-   strcat(photon_block_path, evt_num);
-   strcat(photon_block_path, ".acp");   
+   strcat(photon_block_path, evt_num);   
    acp_photon_block = fopen(photon_block_path, "wb");
 }
 
