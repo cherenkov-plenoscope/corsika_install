@@ -1,7 +1,8 @@
 /*
-   Copyright (C) 1997, 1998, ..., 2012, 2013, 2016  Konrad Bernloehr
+   Sebastian Achim Mueller, ETH Zurich 2016
 
-   This file is part of the IACT/atmo package for CORSIKA.
+   This file originated from the iact.c file which is part of the IACT/atmo
+   package for CORSIKA by Konrad Bernloehr.
 
    The IACT/atmo package is free software; you can redistribute it 
    and/or modify it under the terms of the GNU Lesser General Public
@@ -38,7 +39,7 @@ typedef double cors_real_dbl_t;
 typedef double cors_dbl_t;
 
 /* =============================================================== */
-/* FORTRAN called functions (beware changes of parameter types !!) */
+/* FORTRAN called functions                                        */
 /* The additional character string lengths for name in telfil_ and */
 /* line in tellni_ are not used because compiler-dependent.        */
 void telfil_(char *name);
@@ -115,7 +116,7 @@ struct PhotonBunch{
    float mother_charge;
 };
 
-//-------------------- AcpIo --------------------------------------------------
+//-------------------- AcpIo ---------------------------------------------------
 struct AcpIo {
    char output_path [1024];
    char runh_path [1024];
@@ -140,6 +141,17 @@ void AcpIo_init(struct AcpIo* sane, char* output_path) {
 
    strcpy(sane->readme_path, sane->output_path);
    strcat(sane->readme_path, ".README.md");
+}
+
+void AcpIo_assert_file_is_open(struct AcpIo* sane, FILE* file, char* name) {
+   if(file == NULL) {
+      char message [2048];
+      strcpy(message, "AcpIo: unable to open specific file: '");
+      strcat(message, name);
+      strcat(message, "'\n");
+      fputs(message, stderr);
+      exit(1);      
+   }
 }
 
 void AcpIo_write_readme(struct AcpIo* sane) {
@@ -179,6 +191,7 @@ void AcpIo_write_readme(struct AcpIo* sane) {
    "     Sebastian Achim Mueller, ETH Zurich 2016.\n";
    FILE* out;
    out = fopen(sane->readme_path, "w");
+   AcpIo_assert_file_is_open(sane, out, sane->readme_path);
    fputs(readme, out);
    fclose(out);    
 }
@@ -210,6 +223,7 @@ void AcpIo_write_evth(struct AcpIo* sane, cors_real_t evth[273], int event_numbe
    AcpIo_evth_path(sane, event_number, evth_path);
    FILE* out;
    out = fopen(evth_path, "wb");
+   AcpIo_assert_file_is_open(sane, out, evth_path);
    fwrite(&evth, sizeof(cors_real_t), 273, out);
    fclose(out);  
 }
@@ -217,7 +231,8 @@ void AcpIo_write_evth(struct AcpIo* sane, cors_real_t evth[273], int event_numbe
 void AcpIo_open_photon_block(struct AcpIo* sane, int event_number) {
    char photons_path[1024];
    AcpIo_photons_path(sane, event_number, photons_path);
-   sane->current_photons = fopen(photons_path, "wb");  
+   sane->current_photons = fopen(photons_path, "wb"); 
+   AcpIo_assert_file_is_open(sane, sane->current_photons, photons_path);
 }
 
 void AcpIo_append_photon_bunch(struct AcpIo* sane, struct PhotonBunch* bunch) {
@@ -236,18 +251,81 @@ struct Plenoscope {
    double radius;
 };
 
-int Plenoscope_is_hit_by_photon(struct Plenoscope* pl, struct PhotonBunch* bunch) {
-   double distance_to_plenoscope_center = sqrt(bunch->x*bunch->x + bunch->y*bunch->y);
+void Plenoscope_init(
+   struct Plenoscope* pl, 
+   double x, 
+   double y, 
+   double z, 
+   double r
+) {
+   pl->x = x;
+   pl->y = y;
+   pl->z = z;
+   pl->radius = r;
+}
+
+int Plenoscope_is_hit_by_photon(
+   struct Plenoscope* pl, 
+   struct PhotonBunch* bunch
+) {
+   // The ray equation of the photon bunch:
+   double sx, sy, sz, dx, dy, dz;
+   // Ray support vector:
+   sx = bunch->x;
+   sy = bunch->y;
+   sz = 0.0;
+   // Ray direction vector:
+   dx = bunch->cx;
+   dy = bunch->cy;
+   dz = sqrt(1.0 - dx*dx - dy*dy);
+
+   // The plenoscope center:
+   double px, py, pz;
+   px = pl->x;
+   py = pl->y;
+   pz = pl->z;
+
+   // Calculate ray parameter alpha (vec{x}:= vec{s} + alpha * vec{d}) which 
+   // marks the closest point on the photon bunch ray to the plenoscope center. 
+   double d = dx*px + dy*py + dz*pz;
+   double alpha = d - sx*dx - sy*dy - sz*dz;
+
+   // Closest point on photon bunch to plenoscope center.
+   double clx, cly, clz;
+   clx = sx + alpha*dx;
+   cly = sy + alpha*dy;
+   clz = sz + alpha*dz;
+
+   // Connection vector between plenoscope center and closest point on photon 
+   // bunch ray.
+   double conx, cony, conz;
+   conx = px - clx;
+   cony = py - cly;
+   conz = pz - clz;
+
+   // The closest distance from the plenoscope center to the photon bunch ray.
+   double distance_to_plenoscope_center = 
+      sqrt(conx*conx + cony*cony + conz*conz);
+
    return pl->radius >= distance_to_plenoscope_center;
 }
 
-//-------------------- init-- --------------------------------------------------
+void Plenoscope_transform_to_plenoscope_frame(
+   struct Plenoscope* pl, 
+   struct PhotonBunch* bunch
+) {
+   bunch->x = bunch->x - pl->x;
+   bunch->y = bunch->y - pl->y;
+}
+
+//-------------------- init ----------------------------------------------------
 int SEED = -1;
 char output_path[1024] = "";
 
 struct Plenoscope plenoscope;
 struct AcpIo acp_out;
 
+//-------------------- CORSIKA bridge ------------------------------------------
 /**
  * Define the output file for photon bunches hitting the telescopes.
  * @param  name    Output file name.
@@ -302,14 +380,7 @@ void telinf_ (
  *  @return (none)
 */
 void telrnh_ (cors_real_t runh[273]) {
-
    SEED = (int)runh[(11+3*1)-1];
-
-   plenoscope.x = 0.0;
-   plenoscope.y = 0.0;
-   plenoscope.z = 0.0;
-   plenoscope.radius = 55.0e2;
-
    AcpIo_init(&acp_out, output_path);
    AcpIo_write_runh(&acp_out, runh);
 }
@@ -367,7 +438,7 @@ void telset_ (
    cors_real_now_t *z, 
    cors_real_now_t *r
 ) {
-   return;
+   Plenoscope_init(&plenoscope, (*x), (*y), (*z), (*r));
 }
 
 
@@ -379,7 +450,6 @@ void telset_ (
  *  @return (none)
 */
 void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
-
    int event_number = (int)evth[2-1];
    AcpIo_write_evth(&acp_out, evth, event_number);
    AcpIo_open_photon_block(&acp_out, event_number);
@@ -438,6 +508,7 @@ int telout_ (
    bunch.mother_charge = *charge; 
 
    if(Plenoscope_is_hit_by_photon(&plenoscope, &bunch)) {
+      Plenoscope_transform_to_plenoscope_frame(&plenoscope, &bunch);
       AcpIo_append_photon_bunch(&acp_out, &bunch);
    }
    return 0;
