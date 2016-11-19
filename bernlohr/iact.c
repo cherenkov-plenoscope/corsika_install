@@ -116,8 +116,8 @@ struct PhotonBunch{
    float mother_charge;
 };
 
-//-------------------- AcpIo ---------------------------------------------------
-struct AcpIo {
+//-------------------- CerIo ---------------------------------------------------
+struct CerIo {
    char output_path [1024];
    char runh_path [1024];
    char evth_template_path [1024];
@@ -126,7 +126,7 @@ struct AcpIo {
    FILE *current_photons;
 };
 
-void AcpIo_init(struct AcpIo* sane, char* output_path) {
+void CerIo_init(struct CerIo* sane, char* output_path) {
    sane->current_photons = NULL;
    strcpy(sane->output_path, output_path);
 
@@ -143,10 +143,10 @@ void AcpIo_init(struct AcpIo* sane, char* output_path) {
    strcat(sane->readme_path, ".README.md");
 }
 
-void AcpIo_assert_file_is_open(struct AcpIo* sane, FILE* file, char* name) {
+void CerIo_assert_file_is_open(struct CerIo* sane, FILE* file, char* name) {
    if(file == NULL) {
       char message [2048];
-      strcpy(message, "AcpIo: unable to open specific file: '");
+      strcpy(message, "CerIo: unable to open specific file: '");
       strcat(message, name);
       strcat(message, "'\n");
       fputs(message, stderr);
@@ -154,10 +154,10 @@ void AcpIo_assert_file_is_open(struct AcpIo* sane, FILE* file, char* name) {
    }
 }
 
-void AcpIo_write_readme(struct AcpIo* sane) {
+void CerIo_write_readme(struct CerIo* sane) {
    char readme[] = 
-   "Atmospheric Cherenkov Plenoscope (ACP)\n"
-   "--------------------------------------\n"
+   "Cherenkov I/O\n"
+   "-------------\n"
    "\n"
    ".runh\n"
    "-----\n"
@@ -191,68 +191,68 @@ void AcpIo_write_readme(struct AcpIo* sane) {
    "     Sebastian Achim Mueller, ETH Zurich 2016.\n";
    FILE* out;
    out = fopen(sane->readme_path, "w");
-   AcpIo_assert_file_is_open(sane, out, sane->readme_path);
+   CerIo_assert_file_is_open(sane, out, sane->readme_path);
    fputs(readme, out);
    fclose(out);    
 }
 
-void AcpIo_evth_path(struct AcpIo* sane, int event_number, char* evth_path) {
+void CerIo_evth_path(struct CerIo* sane, int event_number, char* evth_path) {
    char evt_num[1024];
    sprintf(evt_num, "%d", event_number);
    strcpy(evth_path, sane->evth_template_path);
    strcat(evth_path, evt_num);
 }
 
-void AcpIo_photons_path(struct AcpIo* sane, int event_number, char* photons_path) {
+void CerIo_photons_path(struct CerIo* sane, int event_number, char* photons_path) {
    char evt_num[1024];
    sprintf(evt_num, "%d", event_number);
    strcpy(photons_path, sane->photon_block_template_path);
    strcat(photons_path, evt_num);
 }
 
-void AcpIo_write_runh(struct AcpIo* sane, cors_real_t runh[273]) {
-   AcpIo_write_readme(sane);
+void CerIo_write_runh(struct CerIo* sane, cors_real_t runh[273]) {
+   CerIo_write_readme(sane);
    FILE* out;
    out = fopen(sane->runh_path, "wb");
    fwrite(&runh, sizeof(cors_real_t), 273, out);
    fclose(out);  
 }
 
-void AcpIo_write_evth(struct AcpIo* sane, cors_real_t evth[273], int event_number) {
+void CerIo_write_evth(struct CerIo* sane, cors_real_t evth[273], int event_number) {
    char evth_path[1024];
-   AcpIo_evth_path(sane, event_number, evth_path);
+   CerIo_evth_path(sane, event_number, evth_path);
    FILE* out;
    out = fopen(evth_path, "wb");
-   AcpIo_assert_file_is_open(sane, out, evth_path);
+   CerIo_assert_file_is_open(sane, out, evth_path);
    fwrite(&evth, sizeof(cors_real_t), 273, out);
    fclose(out);  
 }
 
-void AcpIo_open_photon_block(struct AcpIo* sane, int event_number) {
+void CerIo_open_photon_block(struct CerIo* sane, int event_number) {
    char photons_path[1024];
-   AcpIo_photons_path(sane, event_number, photons_path);
+   CerIo_photons_path(sane, event_number, photons_path);
    sane->current_photons = fopen(photons_path, "wb"); 
-   AcpIo_assert_file_is_open(sane, sane->current_photons, photons_path);
+   CerIo_assert_file_is_open(sane, sane->current_photons, photons_path);
 }
 
-void AcpIo_append_photon_bunch(struct AcpIo* sane, struct PhotonBunch* bunch) {
+void CerIo_append_photon_bunch(struct CerIo* sane, struct PhotonBunch* bunch) {
    fwrite(bunch, sizeof((*bunch)), 1, sane->current_photons);
 }
 
-void AcpIo_close_photon_block(struct AcpIo* sane) {
+void CerIo_close_photon_block(struct CerIo* sane) {
    fclose(sane->current_photons); 
 }
 
-//-------------------- Plenoscope ----------------------------------------------
-struct Plenoscope {
+//-------------------- Detector ------------------------------------------------
+struct Detector {
    double x;
    double y;
    double z;
    double radius;
 };
 
-void Plenoscope_init(
-   struct Plenoscope* pl, 
+void Detector_init(
+   struct Detector* pl, 
    double x, 
    double y, 
    double z, 
@@ -264,8 +264,8 @@ void Plenoscope_init(
    pl->radius = r;
 }
 
-int Plenoscope_is_hit_by_photon(
-   struct Plenoscope* pl, 
+int Detector_is_hit_by_photon(
+   struct Detector* pl, 
    struct PhotonBunch* bunch
 ) {
    // The ray equation of the photon bunch:
@@ -279,39 +279,39 @@ int Plenoscope_is_hit_by_photon(
    dy = bunch->cy;
    dz = sqrt(1.0 - dx*dx - dy*dy);
 
-   // The plenoscope center:
+   // The detector center:
    double px, py, pz;
    px = pl->x;
    py = pl->y;
    pz = pl->z;
 
    // Calculate ray parameter alpha (vec{x}:= vec{s} + alpha * vec{d}) which 
-   // marks the closest point on the photon bunch ray to the plenoscope center. 
+   // marks the closest point on the photon bunch ray to the detector center. 
    double d = dx*px + dy*py + dz*pz;
    double alpha = d - sx*dx - sy*dy - sz*dz;
 
-   // Closest point on photon bunch to plenoscope center.
+   // Closest point on photon bunch to detector center.
    double clx, cly, clz;
    clx = sx + alpha*dx;
    cly = sy + alpha*dy;
    clz = sz + alpha*dz;
 
-   // Connection vector between plenoscope center and closest point on photon 
+   // Connection vector between detector center and closest point on photon 
    // bunch ray.
    double conx, cony, conz;
    conx = px - clx;
    cony = py - cly;
    conz = pz - clz;
 
-   // The closest distance from the plenoscope center to the photon bunch ray.
-   double distance_to_plenoscope_center = 
+   // The closest distance from the detector center to the photon bunch ray.
+   double distance_to_detector_center = 
       sqrt(conx*conx + cony*cony + conz*conz);
 
-   return pl->radius >= distance_to_plenoscope_center;
+   return pl->radius >= distance_to_detector_center;
 }
 
-void Plenoscope_transform_to_plenoscope_frame(
-   struct Plenoscope* pl, 
+void Detector_transform_to_detector_frame(
+   struct Detector* pl, 
    struct PhotonBunch* bunch
 ) {
    bunch->x = bunch->x - pl->x;
@@ -322,8 +322,8 @@ void Plenoscope_transform_to_plenoscope_frame(
 int SEED = -1;
 char output_path[1024] = "";
 
-struct Plenoscope plenoscope;
-struct AcpIo acp_out;
+struct Detector detector;
+struct CerIo acp_out;
 
 //-------------------- CORSIKA bridge ------------------------------------------
 /**
@@ -381,8 +381,8 @@ void telinf_ (
 */
 void telrnh_ (cors_real_t runh[273]) {
    SEED = (int)runh[(11+3*1)-1];
-   AcpIo_init(&acp_out, output_path);
-   AcpIo_write_runh(&acp_out, runh);
+   CerIo_init(&acp_out, output_path);
+   CerIo_write_runh(&acp_out, runh);
 }
 
 
@@ -438,7 +438,7 @@ void telset_ (
    cors_real_now_t *z, 
    cors_real_now_t *r
 ) {
-   Plenoscope_init(&plenoscope, (*x), (*y), (*z), (*r));
+   Detector_init(&detector, (*x), (*y), (*z), (*r));
 }
 
 
@@ -451,8 +451,8 @@ void telset_ (
 */
 void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
    int event_number = (int)evth[2-1];
-   AcpIo_write_evth(&acp_out, evth, event_number);
-   AcpIo_open_photon_block(&acp_out, event_number);
+   CerIo_write_evth(&acp_out, evth, event_number);
+   CerIo_open_photon_block(&acp_out, event_number);
 }
 
 
@@ -507,9 +507,9 @@ int telout_ (
    bunch.mother_mass = *amass;
    bunch.mother_charge = *charge; 
 
-   if(Plenoscope_is_hit_by_photon(&plenoscope, &bunch)) {
-      Plenoscope_transform_to_plenoscope_frame(&plenoscope, &bunch);
-      AcpIo_append_photon_bunch(&acp_out, &bunch);
+   if(Detector_is_hit_by_photon(&detector, &bunch)) {
+      Detector_transform_to_detector_frame(&detector, &bunch);
+      CerIo_append_photon_bunch(&acp_out, &bunch);
    }
    return 0;
 }
@@ -556,7 +556,7 @@ void tellng_ (
 */
 void telend_ (cors_real_t evte[273])
 {
-   AcpIo_close_photon_block(&acp_out);
+   CerIo_close_photon_block(&acp_out);
    return;
 }
 
