@@ -103,6 +103,19 @@ extern double heigh_ (double *thickness);
 
 /* =============================================================== */
 /* The ACP */
+struct PhotonBunch{
+   float size;
+   float x;
+   float y;
+   float cx;
+   float cy;
+   float arrival_time;
+   float emission_altitude;
+   float wavelength;
+   float mother_mass;
+   float mother_charge;
+};
+
 int SEED = -1;
 FILE *acp_photon_block;
 char acp_out_path[1024] = "";
@@ -112,7 +125,6 @@ struct Plenoscope {
    double z;
    double radius;
 };
-
 struct Plenoscope plenoscope;
 
 /**
@@ -287,12 +299,10 @@ void televt_ (cors_real_t evth[273], cors_real_dbl_t prmpar[PRMPAR_SIZE]) {
  *  @param  lambda  0. (if wavelength undetermined) or wavelength [nm].
  *                  If lambda < 0, photons are already converted to
  *                  photo-electrons (p.e.), i.e. we have p.e. bunches.
- *  @param  temis   Time of photon emission (only if CORSIKA extracted
- *                  with IACTEXT option and this code compiled with
- *                  EXTENDED_TELOUT defined).
- *  @param  penergy Energy of emitting particle (under conditions as temis).
- *  @param  amass   Mass of emitting particle (under conditions as temis).
- *  @param  charge  Charge of emitting particle (under conditions as temis).
+ *  @param  temis   Time of photon emission 
+ *  @param  penergy Energy of emitting particle.
+ *  @param  amass   Mass of emitting particle.
+ *  @param  charge  Charge of emitting particle.
  *
  *  @return  0 (no output to old-style CORSIKA file needed)
  *           2 (detector hit but no eventio interface available or
@@ -313,33 +323,23 @@ int telout_ (
    double *amass, 
    double *charge
 ) {
-   struct {
-      float size;
-      float x;
-      float y;
-      float cx;
-      float cy;
-      float arrival_time;
-      float emission_altitude;
-      float wavelength;
-      float mother_mass;
-      float mother_charge;
-   } bunch;
+   struct PhotonBunch bunch;
 
    bunch.size = *bsize;
    bunch.x = *px;
-   bunch.y = *py;   
+   bunch.y = *py;
    bunch.cx = *pu;
    bunch.cy = *pv;
    bunch.arrival_time = *ctime;
    bunch.emission_altitude = *zem; 
-   bunch.wavelength = *lambda;
+   bunch.wavelength = fabs(*lambda);
    bunch.mother_mass = *amass;
    bunch.mother_charge = *charge; 
 
    double dist = sqrt(bunch.x*bunch.x + bunch.y*bunch.y);
    if(dist <= plenoscope.radius)
       fwrite(&bunch, sizeof(bunch), 1, acp_photon_block);
+   return 0;
 }
 
 
