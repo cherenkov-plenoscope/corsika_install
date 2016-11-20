@@ -195,7 +195,7 @@
 /* #undef __CACHE_HORIZONTAL__ */
 
 /* coconut configration cache for option IACTEXT */
-/* #undef __CACHE_IACTEXT__ */
+#define __CACHE_IACTEXT__ /**/
 
 /* coconut configration cache for option IACT */
 #define __CACHE_IACT__ /**/
@@ -369,7 +369,7 @@
 /* #undef __GHEISHAD__ */
 
 /* for external IACT Cherenkov file */
-/* #undef __IACTEXT__ */
+#define __IACTEXT__ 1
 
 /* for Cherenkov telescope detector */
 #define __IACT__ 1
