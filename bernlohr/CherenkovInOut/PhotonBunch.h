@@ -15,6 +15,18 @@ struct PhotonBunch{
    float mother_charge;
 };
 
+double PhotonBunch_cz(struct PhotonBunch* bunch) {
+   return sqrt(1.0 - bunch->cx*bunch->cx - bunch->cy*bunch->cy);
+}
+
+double PhotonBunch_slope_x(struct PhotonBunch* bunch) {
+   return bunch->cx/PhotonBunch_cz(bunch);
+}
+
+double PhotonBunch_slope_y(struct PhotonBunch* bunch) {
+   return bunch->cy/PhotonBunch_cz(bunch);
+}
+
 void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    char size_str[1024];
    sprintf(size_str, "%f", bunch->size);
