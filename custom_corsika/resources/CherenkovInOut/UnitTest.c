@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "DetectorSphere.h"
+#include "MersenneTwister.h"
 
 int number_of_tests;
 int number_of_failed_tests;
@@ -269,6 +270,49 @@ int main() {
         expect_near(__LINE__, bunch.y, 2.0 - 1.0, "DetectorSphere_transform, expect offset in y");
         expect_near(__LINE__, bunch.cx, 0.1, "DetectorSphere_transform, expect no offset in cx");
         expect_near(__LINE__, bunch.cy, 0.2, "DetectorSphere_transform, expect no offset in cy");
+    }
+
+
+    // MersenneTwister seeds
+    {
+        uint32_t pseudo_random_numbers[10];
+        MT19937_init(0);
+
+        for(int i=0; i<10; i++)
+            pseudo_random_numbers[i] = MT19937_extract_uint32();
+
+        uint32_t pseudo_random_numbers_2[10];
+        MT19937_init(0);      
+
+        for(int i=0; i<10; i++)
+            pseudo_random_numbers_2[i] = MT19937_extract_uint32();
+
+        for(int i=0; i<10; i++)
+            expect_true(
+                __LINE__, 
+                pseudo_random_numbers[i] == pseudo_random_numbers_2[i],
+                "Prng results schould be the same when using the same seed"
+            );
+    }
+
+    // MersenneTwister uniform mean
+    {   
+        const int N = 1000*1000;
+        double rns[N];
+        MT19937_init(0);
+
+        for(int i=0; i<N; i++)
+            rns[i] = MT19937_uniform();
+
+        double sum = 0.0;
+        for(int i=0; i<N; i++)
+            sum = sum + rns[i];
+
+        double mean = sum/(double)N;
+        expect_true(
+            __LINE__, 
+            fabs(mean - 0.5) < 1e-3,
+            "The mean of the uniform distribution should be close to 0.5");
     }
 
     printf("\nCherenkovInOut UnitTests: Finished\n");
