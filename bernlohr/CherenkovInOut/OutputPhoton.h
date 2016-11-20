@@ -1,6 +1,8 @@
 #ifndef __OutputPhoton_H_INCLUDED__
 #define __OutputPhoton_H_INCLUDED__
 
+#include <math.h>
+
 //-------------------- OutputPhoton --------------------------------------------
 struct OutputPhoton{
    short x;
@@ -23,11 +25,23 @@ short compress_slope_to_short(const double cx) {
    return (short)(cx*MAXSHORT);
 }
 
+short compress_emission_altitude_to_short(double alt) {
+   alt = fabs(alt);
+   return (short)((alt/100000.0e2)*MAXSHORT);
+}
+
+short compress_mother_to_short(const double mass, const double charge) {
+   return 1;
+}
+
 struct OutputPhoton bunch2photon(
    struct PhotonBunch* bunch, 
    struct CherenkovInOut* cerio, 
    struct DetectorSphere* detector
 ) {
+   const double time_offset = cerio->time_offset;
+   const double speed_of_light = cerio->speed_of_light_in_air_on_observation_level;
+
    struct OutputPhoton photon;
    photon.x = compress_position_to_short(bunch->x);
    photon.y = compress_position_to_short(bunch->y);
@@ -35,8 +49,9 @@ struct OutputPhoton bunch2photon(
    photon.cy = compress_slope_to_short(bunch->cy);
    photon.wavelength = (short)(bunch->wavelength*MAXSHORT);
    photon.arrival_time = bunch->arrival_time - 
-           detector->z*sqrt(1.+bunch->cx*bunch->cx+bunch->cy*bunch->cy)/cerio->speed_of_light_in_air_on_observation_level - cerio->time_offset;
+           detector->z*sqrt(1.+bunch->cx*bunch->cx+bunch->cy*bunch->cy)/speed_of_light - time_offset;
 
+   photon.emission_altitude = compress_emission_altitude_to_short(bunch->emission_altitude);
 
    return photon;
 }
