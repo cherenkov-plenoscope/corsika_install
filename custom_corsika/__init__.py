@@ -61,7 +61,7 @@ def main():
         corsika_config_path = pkg_resources.resource_filename(
                 'custom_corsika', 
                 'resources/config.h')
-        shutil.copyfile(corsika_config_path, 'include/config.h')
+        shutil.copy(corsika_config_path, 'include/config.h')
 
         # coconut configure 
         call_and_save_std(
@@ -69,6 +69,14 @@ def main():
             os.path.join(install_path, 'coconut_configure.stdout'),
             os.path.join(install_path, 'coconut_configure.stderr'),
             stdin=open('/dev/null', 'r'))
+
+        # Patch iact.c with 
+        iact_path = pkg_resources.resource_filename(
+            'custom_corsika', 'resources/iact.c')
+        cerio_path = pkg_resources.resource_filename(
+            'custom_corsika', 'resources/CherenkovInOut')
+        shutil.copy(iact_path, 'bernlohr/iact.c')
+        shutil.copytree(cerio_path, 'bernlohr/CherenkovInOut')
 
         # coconut build
         call_and_save_std(
