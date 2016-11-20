@@ -78,8 +78,19 @@ void DetectorSphere_transform_to_detector_frame(
    struct DetectorSphere* sphere, 
    struct PhotonBunch* bunch
 ) {
-   bunch->x = bunch->x - sphere->x;
-   bunch->y = bunch->y - sphere->y;
+   bunch->x = bunch->x - sphere->x - PhotonBunch_slope_x(bunch)*sphere->z;
+   bunch->y = bunch->y - sphere->y - PhotonBunch_slope_y(bunch)*sphere->z;
 }
 
 #endif // __DetectorSphere_H_INCLUDED__ 
+
+/*
+   bunch->size    = size;
+   bunch->x       = x - sx*det->z0 - det->x0;
+   bunch->y       = y - sy*det->z0 - det->y0;
+   bunch->cx      = cx;
+   bunch->cy      = cy;
+   bunch->ctime   = ctime - det->z0*sqrt(1.+sx*sx+sy*sy)/airlightspeed - toffset;
+   bunch->zem     = zem;
+   bunch->lambda  = lambda;
+*/
