@@ -4,6 +4,8 @@
 // forward declared dependencies
 
 // included dependencies
+#include <math.h>
+#include "PhotonBunch.h"
 
 //-------------------- DetectorSphere ------------------------------------------
 struct DetectorSphere {
