@@ -8,10 +8,10 @@
 int number_of_tests;
 int number_of_failed_tests;
 
-int expect_equal(int line, double a, double b, char* comment) {
+int expect_near(int line, double a, double b, char* comment) {
     number_of_tests = number_of_tests + 1;
     printf(".");
-    if(a == b) {
+    if(fabs(a-b) < 1e-6) {
         return 0;
     }else{
 
@@ -62,10 +62,10 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 1.0, 2.0, 3.0, 55.0);
 
-        expect_equal(__LINE__, sphere.x, 1.0, "init x position of DetectorSphere");
-        expect_equal(__LINE__, sphere.y, 2.0, "init y position of DetectorSphere");
-        expect_equal(__LINE__, sphere.z, 3.0, "init z position of DetectorSphere");
-        expect_equal(__LINE__, sphere.radius, 55.0, "init radius of DetectorSphere");
+        expect_near(__LINE__, sphere.x, 1.0, "init x position of DetectorSphere");
+        expect_near(__LINE__, sphere.y, 2.0, "init y position of DetectorSphere");
+        expect_near(__LINE__, sphere.z, 3.0, "init z position of DetectorSphere");
+        expect_near(__LINE__, sphere.radius, 55.0, "init radius of DetectorSphere");
     }
 
     // Frontal hit on DetectorSphere
@@ -249,15 +249,30 @@ int main() {
         bunch.cy = 0.2;
 
         DetectorSphere_transform_to_detector_frame(&sphere, &bunch);
-        expect_equal(__LINE__, bunch.x, 1.0, "DetectorSphere_transform, expect no offset in x");
-        expect_equal(__LINE__, bunch.y, 2.0, "DetectorSphere_transform, expect no offset in y");
-        expect_equal(__LINE__, bunch.cx, 0.1, "DetectorSphere_transform, expect no offset in cx");
-        expect_equal(__LINE__, bunch.cy, 0.2, "DetectorSphere_transform, expect no offset in cy");
+        expect_near(__LINE__, bunch.x, 1.0, "DetectorSphere_transform, expect no offset in x");
+        expect_near(__LINE__, bunch.y, 2.0, "DetectorSphere_transform, expect no offset in y");
+        expect_near(__LINE__, bunch.cx, 0.1, "DetectorSphere_transform, expect no offset in cx");
+        expect_near(__LINE__, bunch.cy, 0.2, "DetectorSphere_transform, expect no offset in cy");
     }
 
 
+    // transform_to_detector_frame, expect offset
+    {
+        struct DetectorSphere sphere;
+        DetectorSphere_init(&sphere, 0.3, 1.0, 0.0, 0.0);
 
+        struct PhotonBunch bunch;
+        bunch.x = 1.0;
+        bunch.y = 2.0;
+        bunch.cx = 0.1;
+        bunch.cy = 0.2;
 
+        DetectorSphere_transform_to_detector_frame(&sphere, &bunch);
+        expect_near(__LINE__, bunch.x, 1.0 - 0.3, "DetectorSphere_transform, expect offset in x");
+        expect_near(__LINE__, bunch.y, 2.0 - 1.0, "DetectorSphere_transform, expect offset in y");
+        expect_near(__LINE__, bunch.cx, 0.1, "DetectorSphere_transform, expect no offset in cx");
+        expect_near(__LINE__, bunch.cy, 0.2, "DetectorSphere_transform, expect no offset in cy");
+    }
 
     printf("\nCherenkovInOut UnitTests: Finished\n");
     return number_of_failed_tests;
