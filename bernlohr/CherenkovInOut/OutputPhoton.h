@@ -15,16 +15,24 @@ struct OutputPhoton{
 
 const double MAXSHORT = 32768.0;
 
+short compress_position_to_short(const double pos) {
+   return (short)((pos/260.0e2)*MAXSHORT);
+}
+
+short compress_slope_to_short(const double cx) {
+   return (short)(cx*MAXSHORT);
+}
+
 struct OutputPhoton bunch2photon(
    struct PhotonBunch* bunch, 
    struct CherenkovInOut* cerio, 
    struct DetectorSphere* detector
 ) {
    struct OutputPhoton photon;
-   photon.x = (short)((bunch->x/260.0e2)*MAXSHORT);
-   photon.y = (short)((bunch->y/260.0e2)*MAXSHORT);
-   photon.cx = (short)(bunch->cx*MAXSHORT);
-   photon.cy = (short)(bunch->cy*MAXSHORT);
+   photon.x = compress_position_to_short(bunch->x);
+   photon.y = compress_position_to_short(bunch->y);
+   photon.cx = compress_slope_to_short(bunch->cx);
+   photon.cy = compress_slope_to_short(bunch->cy);
    photon.wavelength = (short)(bunch->wavelength*MAXSHORT);
    photon.arrival_time = bunch->arrival_time - 
            detector->z*sqrt(1.+bunch->cx*bunch->cx+bunch->cy*bunch->cy)/cerio->speed_of_light_in_air_on_observation_level - cerio->time_offset;
