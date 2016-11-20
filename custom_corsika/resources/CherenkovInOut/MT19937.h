@@ -3,10 +3,9 @@
 
 #include <stdint.h>
 
-// Define MT19937 constants (32-bit RNG)
 // Adopted from https://en.wikipedia.org/wiki/Mersenne_Twister
-
 //-------------------- MersenneTwister -----------------------------------------
+// Define MT19937 constants (32-bit RNG)
 enum {
     // Assumes W = 32 (omitting this)
     N = 624,
@@ -65,7 +64,7 @@ static void MT19937_twist() {
 }
 
 // Obtain a 32-bit random number
-uint32_t MT19937_extract_uint32() {
+uint32_t MT19937_uint32() {
     uint32_t  y;
     int       i = MT19937_index;
 
@@ -86,7 +85,7 @@ uint32_t MT19937_extract_uint32() {
 }
 
 double MT19937_uniform() {
-    uint32_t rn_int = MT19937_extract_uint32();
+    uint32_t rn_int = MT19937_uint32();
     double rn = (double)rn_int;
     double max_uint32 = (double)UINT32_MAX;
     return rn/max_uint32;

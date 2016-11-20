@@ -279,13 +279,13 @@ int main() {
         MT19937_init(0);
 
         for(int i=0; i<10; i++)
-            pseudo_random_numbers[i] = MT19937_extract_uint32();
+            pseudo_random_numbers[i] = MT19937_uint32();
 
         uint32_t pseudo_random_numbers_2[10];
         MT19937_init(0);      
 
         for(int i=0; i<10; i++)
-            pseudo_random_numbers_2[i] = MT19937_extract_uint32();
+            pseudo_random_numbers_2[i] = MT19937_uint32();
 
         for(int i=0; i<10; i++)
             expect_true(
