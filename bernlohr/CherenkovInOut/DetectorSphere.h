@@ -16,20 +16,20 @@ struct DetectorSphere {
 };
 
 void DetectorSphere_init(
-   struct DetectorSphere* pl, 
+   struct DetectorSphere* sphere, 
    double x, 
    double y, 
    double z, 
    double r
 ) {
-   pl->x = x;
-   pl->y = y;
-   pl->z = z;
-   pl->radius = r;
+   sphere->x = x;
+   sphere->y = y;
+   sphere->z = z;
+   sphere->radius = r;
 }
 
 int DetectorSphere_is_hit_by_photon(
-   struct DetectorSphere* pl, 
+   struct DetectorSphere* sphere, 
    struct PhotonBunch* bunch
 ) {
    // The ray equation of the photon bunch:
@@ -45,9 +45,9 @@ int DetectorSphere_is_hit_by_photon(
 
    // The detector center:
    double px, py, pz;
-   px = pl->x;
-   py = pl->y;
-   pz = pl->z;
+   px = sphere->x;
+   py = sphere->y;
+   pz = sphere->z;
 
    // Calculate ray parameter alpha (vec{x}:= vec{s} + alpha * vec{d}) which 
    // marks the closest point on the photon bunch ray to the detector center. 
@@ -71,15 +71,15 @@ int DetectorSphere_is_hit_by_photon(
    double distance_to_detector_center = 
       sqrt(conx*conx + cony*cony + conz*conz);
 
-   return pl->radius >= distance_to_detector_center;
+   return sphere->radius >= distance_to_detector_center;
 }
 
 void DetectorSphere_transform_to_detector_frame(
-   struct DetectorSphere* pl, 
+   struct DetectorSphere* sphere, 
    struct PhotonBunch* bunch
 ) {
-   bunch->x = bunch->x - pl->x;
-   bunch->y = bunch->y - pl->y;
+   bunch->x = bunch->x - sphere->x;
+   bunch->y = bunch->y - sphere->y;
 }
 
 #endif // __DetectorSphere_H_INCLUDED__ 
