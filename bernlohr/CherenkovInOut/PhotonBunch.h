@@ -52,6 +52,11 @@ void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    strcat(out, "y "); strcat(out, y_str); strcat(out, "cm, ");
    strcat(out, "cx "); strcat(out, cx_str); strcat(out, ", ");
    strcat(out, "cy "); strcat(out, cy_str); strcat(out, ", ");
+   strcat(out, "t "); strcat(out, arrival_time_str); strcat(out, "ns, ");
+   strcat(out, "z0 "); strcat(out, emission_altitude_str); strcat(out, "cm, ");
+   strcat(out, "lambda "); strcat(out, wavelength_str); strcat(out, "nm, ");
+   strcat(out, "mother mass "); strcat(out, mother_mass_str); strcat(out, "GeV, ");
+   strcat(out, "mother charge "); strcat(out, mother_charge_str);
    strcat(out, ")");
 }
 
