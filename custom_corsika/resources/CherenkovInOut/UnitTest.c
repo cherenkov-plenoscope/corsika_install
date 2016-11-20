@@ -14,10 +14,8 @@ int expect_near(int line, double a, double b, char* comment) {
     if(fabs(a-b) < 1e-6) {
         return 0;
     }else{
-
         number_of_failed_tests = number_of_failed_tests + 1;
         printf("F");
-
         char info[1024] = "\nError in line ";
         char line_str[1024];
         sprintf(line_str, "%d", line);
@@ -29,7 +27,6 @@ int expect_near(int line, double a, double b, char* comment) {
         return 1;
     }
 }
-
 
 int expect_true(int line, int what, char* comment) {
     number_of_tests = number_of_tests + 1;
