@@ -82,15 +82,4 @@ void DetectorSphere_transform_to_detector_frame(
    bunch->y = bunch->y - sphere->y - Bunch_slope_y(bunch)*sphere->z;
 }
 
-#endif // __CherenkovInOutDetectorSphere_H_INCLUDED__ 
-
-/*
-   bunch->size    = size;
-   bunch->x       = x - sx*det->z0 - det->x0;
-   bunch->y       = y - sy*det->z0 - det->y0;
-   bunch->cx      = cx;
-   bunch->cy      = cy;
-   bunch->ctime   = ctime - det->z0*sqrt(1.+sx*sx+sy*sy)/airlightspeed - toffset;
-   bunch->zem     = zem;
-   bunch->lambda  = lambda;
-*/
+#endif // __CherenkovInOutDetectorSphere_H_INCLUDED__
