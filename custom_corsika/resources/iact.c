@@ -77,7 +77,7 @@ extern double refidx_ (double *height);
 #include "CherenkovInOut/Bunch.h"
 #include "CherenkovInOut/CherenkovInOut.h"
 #include "CherenkovInOut/DetectorSphere.h"
-#include "CherenkovInOut/OutputPhoton.h"
+#include "CherenkovInOut/Photon.h"
 #include "CherenkovInOut/MT19937.h"
 
 //-------------------- init ----------------------------------------------------
