@@ -1,10 +1,10 @@
-#ifndef __OutputPhoton_H_INCLUDED__
-#define __OutputPhoton_H_INCLUDED__
+#ifndef __CherenkovInOutPhoton_H_INCLUDED__
+#define __CherenkovInOutPhoton_H_INCLUDED__
 
 #include <math.h>
 
-//-------------------- OutputPhoton --------------------------------------------
-struct OutputPhoton{
+//-------------------- Photon --------------------------------------------------
+struct Photon{
    short x;
    short y;
    short cx;
@@ -34,7 +34,7 @@ short compress_mother_to_short(const double mass, const double charge) {
    return 1;
 }
 
-struct OutputPhoton bunch2photon(
+struct Photon bunch2photon(
    struct PhotonBunch* bunch, 
    struct CherenkovInOut* cerio, 
    struct DetectorSphere* detector
@@ -42,7 +42,7 @@ struct OutputPhoton bunch2photon(
    const double time_offset = cerio->time_offset;
    const double speed_of_light = cerio->speed_of_light_in_air_on_observation_level;
 
-   struct OutputPhoton photon;
+   struct Photon photon;
    photon.x = compress_position_to_short(bunch->x);
    photon.y = compress_position_to_short(bunch->y);
    photon.cx = compress_slope_to_short(bunch->cx);
@@ -56,4 +56,4 @@ struct OutputPhoton bunch2photon(
    return photon;
 }
 
-#endif // __OutputPhoton_H_INCLUDED__ 
+#endif // __CherenkovInOutPhoton_H_INCLUDED__ 
