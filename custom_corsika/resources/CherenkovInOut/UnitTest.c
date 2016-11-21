@@ -5,6 +5,7 @@
 
 #include "DetectorSphere.h"
 #include "MT19937.h"
+#include "Photon.h"
 
 int number_of_tests;
 int number_of_failed_tests;
@@ -360,6 +361,60 @@ int main() {
         );
     }
 
+    //The nearest integer
+    { 
+        expect_true(__LINE__,
+            round_to_nearest_int(-1.6) == -2,
+            "nearest integer -1.6 -> -2");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(-1.3) == -1,
+            "nearest integer -1.3 -> -1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(-1.0) == -1,
+            "nearest integer -1.0 -> -1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(-0.7) == -1,
+            "nearest integer -0.7 -> -1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(-0.5) == -1,
+            "nearest integer -0.5 -> -1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(-0.2) == 0,
+            "nearest integer -0.2 -> 0");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(0.0) == 0,
+            "nearest integer 0.0 -> 0");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(+0.2) == 0,
+            "nearest integer  0.2 -> 0");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(+0.5) == 1,
+            "nearest integer  0.5 -> 1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(+0.7) == 1,
+            "nearest integer  0.7 -> 1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(+1.0) == 1,
+            "nearest integer  0.2 -> 0");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(1.3) == 1,
+            "nearest integer 1.3 -> 1");
+
+        expect_true(__LINE__,
+            round_to_nearest_int(1.6) == 2,
+            "nearest integer 1.6 -> 2");
+    }
     printf("\nCherenkovInOut UnitTests: Finished\n");
     return number_of_failed_tests;
 }

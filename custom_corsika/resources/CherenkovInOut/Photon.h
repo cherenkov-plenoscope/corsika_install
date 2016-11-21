@@ -4,6 +4,10 @@
 #include <math.h>
 
 //-------------------- Photon --------------------------------------------------
+short round_to_nearest_int(const float number) {
+   return number > 0 ? (short)(number + 0.5) : (short)(number - 0.5);
+}
+
 struct Photon{
    short x;
    short y;
@@ -15,26 +19,39 @@ struct Photon{
    short mother;
 };
 
-const double MAXSHORT = 32768.0;
+const float MAXSHORT = 32768.0;
 
-short compress_position_to_short(const double pos) {
-   return (short)((pos/260.0e2)*MAXSHORT);
+short compress_position_to_short(const float pos) {
+   return round_to_nearest_int((pos/260.0e2)*MAXSHORT);
 }
 
-short compress_slope_to_short(const double cx) {
+short compress_slope_to_short(const float cx) {
    return (short)(cx*MAXSHORT);
 }
 
-short compress_emission_altitude_to_short(double alt) {
+short compress_emission_altitude_to_short(float alt) {
    alt = fabs(alt);
-   return (short)((alt/100000.0e2)*MAXSHORT);
+   return round_to_nearest_int((alt/100000.0e2)*MAXSHORT);
 }
 
-short compress_mother_to_short(const double mass, const double charge) {
+short compress_wavelength_to_short(float wavelength) {
+
+}
+
+short compress_mother_to_short(const float mass, const float charge) {
    return 1;
 }
 
-struct Photon bunch2photon(
+void Photon_init_from_bunch(struct Photon* photon, const struct Bunch* bunch) {
+   photon->x = compress_position_to_short(bunch->x);
+   photon->y = compress_position_to_short(bunch->y);
+   photon->cx = compress_slope_to_short(bunch->cx);
+   photon->cy = compress_slope_to_short(bunch->cy);
+   photon->wavelength = (short)(bunch->wavelength*MAXSHORT);
+}
+
+
+/*void Photon_init_from_bunch(
    struct PhotonBunch* bunch, 
    struct CherenkovInOut* cerio, 
    struct DetectorSphere* detector
@@ -54,6 +71,28 @@ struct Photon bunch2photon(
    photon.emission_altitude = compress_emission_altitude_to_short(bunch->emission_altitude);
 
    return photon;
-}
+}*/
+/*
+cbunch = &det->cbunch[det->next_bunch];
+//@ The bunch size has a limited range of up to 327 photons.
+cbunch->photons = (short)(100.*photons+0.5);
+//@ Positions have a limited range of up to 32.7 m from the detector centre
+cbunch->x       = (short)Nint(10.*(x - sx*det->z0 - det->x0));
+cbunch->y       = (short)Nint(10.*(y - sy*det->z0 - det->y0));
+//@ No limits in the direction (accuracy 7 arcsec for vertical showers)
+cbunch->cx      = (short)Nint(30000.*cx);
+cbunch->cy      = (short)Nint(30000.*cy);
+//@ The time has a limited range of +-3.27 microseconds.
+cbunch->ctime   = (short)Nint(10.*(ctime - 
+        det->z0*sqrt(1.+sx*sx+sy*sy)/airlightspeed - toffset));
+cbunch->log_zem = (short)(1000.*log10(zem)+0.5);
+if ( lambda == 0. )     // Unspecified wavelength of photons
+   cbunch->lambda = (short)0;
+else if ( lambda < 0. ) // Photo-electrons instead of photons
+   cbunch->lambda = (short)(lambda-0.5);
+else                    // Photons of specific wavelength
+   cbunch->lambda = (short)(lambda+0.5);
+det->next_bunch++;
+*/
 
 #endif // __CherenkovInOutPhoton_H_INCLUDED__ 
