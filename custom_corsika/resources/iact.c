@@ -74,7 +74,7 @@ void telend_(cors_real_t evte[273]);
 extern double heigh_ (double *thickness);
 extern double refidx_ (double *height);
 
-#include "CherenkovInOut/PhotonBunch.h"
+#include "CherenkovInOut/Bunch.h"
 #include "CherenkovInOut/CherenkovInOut.h"
 #include "CherenkovInOut/DetectorSphere.h"
 #include "CherenkovInOut/OutputPhoton.h"
@@ -196,7 +196,7 @@ int telout_ (
    double *amass, 
    double *charge
 ) {
-   struct PhotonBunch bunch;
+   struct Bunch bunch;
 
    bunch.size = *bsize;
    bunch.x = *px;
@@ -209,11 +209,11 @@ int telout_ (
    bunch.mother_mass = *amass;
    bunch.mother_charge = *charge;
 
-   PhotonBunch_warn_if_size_above_one(&bunch);
+   Bunch_warn_if_size_above_one(&bunch);
 
    if(DetectorSphere_is_hit_by_photon(&detector, &bunch)
       &&
-      PhotonBunch_reaches_observation_level(&bunch, MT19937_uniform(&prng))
+      Bunch_reaches_observation_level(&bunch, MT19937_uniform(&prng))
    ) {
       DetectorSphere_transform_to_detector_frame(&detector, &bunch);
       CherenkovInOut_append_photon_bunch(&cerio, &bunch);

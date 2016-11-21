@@ -1,8 +1,8 @@
-#ifndef __PhotonBunch_H_INCLUDED__
-#define __PhotonBunch_H_INCLUDED__
+#ifndef __CherenkovInOutBunch_H_INCLUDED__
+#define __CherenkovInOutBunch_H_INCLUDED__
 
-//-------------------- PhotonBunch ---------------------------------------------
-struct PhotonBunch{
+//-------------------- Bunch ---------------------------------------------------
+struct Bunch{
    float size;
    float x;
    float y;
@@ -15,19 +15,19 @@ struct PhotonBunch{
    float mother_charge;
 };
 
-double PhotonBunch_cz(struct PhotonBunch* bunch) {
+double Bunch_cz(struct Bunch* bunch) {
    return sqrt(1.0 - bunch->cx*bunch->cx - bunch->cy*bunch->cy);
 }
 
-double PhotonBunch_slope_x(struct PhotonBunch* bunch) {
-   return bunch->cx/PhotonBunch_cz(bunch);
+double Bunch_slope_x(struct Bunch* bunch) {
+   return bunch->cx/Bunch_cz(bunch);
 }
 
-double PhotonBunch_slope_y(struct PhotonBunch* bunch) {
-   return bunch->cy/PhotonBunch_cz(bunch);
+double Bunch_slope_y(struct Bunch* bunch) {
+   return bunch->cy/Bunch_cz(bunch);
 }
 
-void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
+void Bunch_to_string(struct Bunch* bunch, char* out) {
    char size_str[1024];
    sprintf(size_str, "%f", bunch->size);
 
@@ -58,7 +58,7 @@ void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    char mother_charge_str[1024];
    sprintf(mother_charge_str, "%f", bunch->mother_charge);
 
-   strcpy(out, "PhotonBunch(");
+   strcpy(out, "Bunch(");
    strcat(out, "size "); strcat(out, size_str); strcat(out, ", ");
    strcat(out, "x "); strcat(out, x_str); strcat(out, "cm, ");
    strcat(out, "y "); strcat(out, y_str); strcat(out, "cm, ");
@@ -72,10 +72,10 @@ void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    strcat(out, ")");
 }
 
-void PhotonBunch_warn_if_size_above_one(struct PhotonBunch* bunch) {
+void Bunch_warn_if_size_above_one(struct Bunch* bunch) {
    if(bunch->size > 1.0) {
       char bunch_str[4096];
-      PhotonBunch_to_string(bunch, bunch_str);
+      Bunch_to_string(bunch, bunch_str);
       fprintf(
          stderr, 
          "Warning: Photon bunch size > 1.0 in %s\n", 
@@ -84,11 +84,11 @@ void PhotonBunch_warn_if_size_above_one(struct PhotonBunch* bunch) {
    }
 }
 
-int PhotonBunch_reaches_observation_level(
-   struct PhotonBunch* bunch,
+int Bunch_reaches_observation_level(
+   struct Bunch* bunch,
    double random_uniform_0to1
 ) {
    return random_uniform_0to1 <= bunch->size;
 }
 
-#endif // __PhotonBunch_H_INCLUDED__ 
+#endif // __CherenkovInOutBunch_H_INCLUDED__ 

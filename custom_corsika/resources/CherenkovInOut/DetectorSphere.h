@@ -5,7 +5,7 @@
 
 // included dependencies
 #include <math.h>
-#include "PhotonBunch.h"
+#include "Bunch.h"
 
 //-------------------- DetectorSphere ------------------------------------------
 struct DetectorSphere {
@@ -30,7 +30,7 @@ void DetectorSphere_init(
 
 int DetectorSphere_is_hit_by_photon(
    struct DetectorSphere* sphere, 
-   struct PhotonBunch* bunch
+   struct Bunch* bunch
 ) {
    // The ray equation of the photon bunch:
    double sx, sy, sz, dx, dy, dz;
@@ -76,10 +76,10 @@ int DetectorSphere_is_hit_by_photon(
 
 void DetectorSphere_transform_to_detector_frame(
    struct DetectorSphere* sphere, 
-   struct PhotonBunch* bunch
+   struct Bunch* bunch
 ) {
-   bunch->x = bunch->x - sphere->x - PhotonBunch_slope_x(bunch)*sphere->z;
-   bunch->y = bunch->y - sphere->y - PhotonBunch_slope_y(bunch)*sphere->z;
+   bunch->x = bunch->x - sphere->x - Bunch_slope_x(bunch)*sphere->z;
+   bunch->y = bunch->y - sphere->y - Bunch_slope_y(bunch)*sphere->z;
 }
 
 #endif // __DetectorSphere_H_INCLUDED__ 

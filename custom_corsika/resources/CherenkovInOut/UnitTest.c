@@ -71,7 +71,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 1.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 0.0;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -86,7 +86,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 1.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 1.1;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -101,7 +101,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 0.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 0.0;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -116,7 +116,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 0.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 1e-6;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -132,7 +132,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 1.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 0.0;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -185,7 +185,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 1.0, sqrt(0.5)+0.01);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 0.0;
         bunch.y = 0.0;
         bunch.cx = 0.0;
@@ -240,7 +240,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.0, 0.0, 0.0, 0.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 1.0;
         bunch.y = 2.0;
         bunch.cx = 0.1;
@@ -259,7 +259,7 @@ int main() {
         struct DetectorSphere sphere;
         DetectorSphere_init(&sphere, 0.3, 1.0, 0.0, 0.0);
 
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.x = 1.0;
         bunch.y = 2.0;
         bunch.cx = 0.1;
@@ -332,31 +332,31 @@ int main() {
         );
     }
 
-    // PhotonBunch reaching observation level
+    // Bunch reaching observation level
     {
-        struct PhotonBunch bunch;
+        struct Bunch bunch;
         bunch.size = 1.0;
         expect_true(__LINE__,
-            PhotonBunch_reaches_observation_level(&bunch, 0.5),
+            Bunch_reaches_observation_level(&bunch, 0.5),
             "100 percent probability to reach ground"
         );
 
         bunch.size = 0.5;
         expect_true(__LINE__,
-            PhotonBunch_reaches_observation_level(&bunch, 0.5),
-            "PhotonBunch expected to reach ground"
+            Bunch_reaches_observation_level(&bunch, 0.5),
+            "Bunch expected to reach ground"
         );
 
         bunch.size = 0.4;
         expect_true(__LINE__,
-            !PhotonBunch_reaches_observation_level(&bunch, 0.5),
-            "PhotonBunch expected to not reach ground"
+            !Bunch_reaches_observation_level(&bunch, 0.5),
+            "Bunch expected to not reach ground"
         );
 
         bunch.size = 0.0;
         expect_true(__LINE__,
-            !PhotonBunch_reaches_observation_level(&bunch, 0.5),
-            "PhotonBunch expected to not reach ground"
+            !Bunch_reaches_observation_level(&bunch, 0.5),
+            "Bunch expected to not reach ground"
         );
     }
 

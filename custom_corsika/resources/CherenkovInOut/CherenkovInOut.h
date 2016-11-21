@@ -183,6 +183,13 @@ void CherenkovInOut_append_photon_bunch(
    fwrite(bunch, sizeof((*bunch)), 1, sane->current_photons);
 }
 
+void CherenkovInOut_append_photon(
+   struct CherenkovInOut* sane, 
+   struct OutputPhoton* photon
+) {
+   fwrite(photon, sizeof((*photon)), 1, sane->current_photons);
+}
+
 void CherenkovInOut_close_photon_block(struct CherenkovInOut* sane) {
    fclose(sane->current_photons); 
 }
