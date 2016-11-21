@@ -1,6 +1,8 @@
 #ifndef __CherenkovInOut_H_INCLUDED__
 #define __CherenkovInOut_H_INCLUDED__
 
+#include "Photon.h"
+
 //-------------------- CherenkovInOut ------------------------------------------
 const double VACUUM_SPEED_OF_LIGHT = 29.9792458;
 
@@ -27,7 +29,7 @@ void CherenkovInOut_init(struct CherenkovInOut* sane, char* output_path) {
    strcat(sane->evth_template_path, ".evth.");
 
    strcpy(sane->photon_block_template_path, sane->output_path);
-   strcat(sane->photon_block_template_path, ".bunches.");
+   strcat(sane->photon_block_template_path, ".photons.");
 
    strcpy(sane->readme_path, sane->output_path);
    strcat(sane->readme_path, ".README.md");
@@ -65,28 +67,38 @@ void CherenkovInOut_write_readme(struct CherenkovInOut* sane) {
    "---------\n"
    "     float32 array [273 x 1], CORSIKA event header of event XXX.\n"
    "\n"
-   ".bunches.XXX\n"
+   ".photons.XXX\n"
    "------------\n"
-   "     float32 array [number_of_bunches x 10], Photon bunches of event XXX.\n"
+   "     struct array [number_of_photons x 1], photons of event XXX.\n"
    "\n"
-   "Photon bunch\n"
-   "------------\n"
-   "     float32  size  bunch size (number of )\n"
-   "     float32  x     incident position on observation plane\n"
-   "     float32  y     incident position on observation plane\n"
-   "     float32  cx    incident angel relative to surface normal of observation plane\n"
-   "     float32  cy    incident angel relative to surface normal of observation plane\n"
-   "     float32  arrival time on observation plane, relative to primary's first interaction\n"
-   "     float32  emission altitude above sea level (not above observation plane)\n"
-   "     float32  wavelength in nano meter\n"
-   "     float32  mother particle mass in GeV\n"
-   "     float32  mother particle electric charge\n"
+   "Photon struct\n"
+   "-------------\n"
+   "     int16    _x  incident position on observation plane [cm]\n"
+   "     int16    _y  incident position on observation plane [cm]\n"
+   "              pos = (_pos/max_int16)*260e2\n"
    "\n"
-   "     Total bunch size is 10 x 4 bytes = 40 bytes\n"
+   "     int16    _cx incident direction relative to surface normal of observation plane [1]\n"
+   "     int16    _cy incident direction relative to surface normal of observation plane [1]\n"
+   "              cx = _cx/max_int16\n"
+   "\n"
+   "     float32  arrival time on observation plane, relative to primary's first interaction [ns]\n"
+   "\n"
+   "     uint8    _wavelength in nano meter [nm]\n"
+   "              wavelength = (_wavelength/max_uint8)*(1e3) + 2e2\n"
+   "\n"
+   "     uint16   _emission_altitude above sea level (not above observation plane) [cm]\n"
+   "              emission_altitude = (_emission_altitude/max_int16)*100*1e3*1e2\n"
+   "\n"
+   "     uint8    mother particle electric charge [1]\n"
+   "\n"
+   "     Total photon size is 2+2+2+2+4+1+2+1 = 16 bytes\n"
+   "\n"
    "\n"
    "To blame\n"
    "--------\n"
    "     Sebastian Achim Mueller, ETH Zurich 2016.\n";
+
+
    FILE* out;
    out = fopen(sane->readme_path, "w");
    CherenkovInOut_assert_file_is_open(sane, out, sane->readme_path);
