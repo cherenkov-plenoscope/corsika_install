@@ -635,7 +635,6 @@ int main() {
                 sizeof(struct Photon) == 16,
                 ""
             );
-            printf("\nPhoton size %d\n", (int)sizeof(struct Photon));
         }
     }
     printf("\nCherenkovInOut UnitTests: Finished\n");
