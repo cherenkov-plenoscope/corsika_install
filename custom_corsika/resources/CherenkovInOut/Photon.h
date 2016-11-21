@@ -81,7 +81,7 @@ void Photon_init_from_bunch(struct Photon* photon, const struct Bunch* bunch) {
    photon->arrival_time = bunch->arrival_time;
    photon->wavelength = compress_wavelength(bunch->wavelength);
    photon->emission_altitude = compress_emission_altitude(bunch->emission_altitude);
-   photon->mother_charge = compress_emission_altitude(bunch->mother_charge);
+   photon->mother_charge = compress_mother_charge(bunch->mother_charge);
 }
 
 #endif // __CherenkovInOutPhoton_H_INCLUDED__ 
