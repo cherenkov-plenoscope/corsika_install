@@ -117,13 +117,14 @@ void telset_ (
    cors_real_now_t *z, 
    cors_real_now_t *r
 ) {
-   if(number_of_detectors == 1) {
+   DetectorSphere_init(&detector, (*x), (*y), (*z), (*r));
+   number_of_detectors = number_of_detectors + 1;
+
+   if(number_of_detectors > 1) {
       fprintf(stderr, "ABORT: There must only be 1 telescope.\n");
       exit(1);      
    }
 
-   DetectorSphere_init(&detector, (*x), (*y), (*z), (*r));
-   number_of_detectors = number_of_detectors + 1;
 }
 
 
