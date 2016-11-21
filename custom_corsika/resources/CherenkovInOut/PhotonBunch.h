@@ -72,7 +72,7 @@ void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    strcat(out, ")");
 }
 
-void PhotonBunch_warn_size_above_one(struct PhotonBunch* bunch) {
+void PhotonBunch_warn_if_size_above_one(struct PhotonBunch* bunch) {
    if(bunch->size > 1.0) {
       char bunch_str[4096];
       PhotonBunch_to_string(bunch, bunch_str);

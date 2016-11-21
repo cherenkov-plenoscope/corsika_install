@@ -209,7 +209,7 @@ int telout_ (
    bunch.mother_mass = *amass;
    bunch.mother_charge = *charge;
 
-   PhotonBunch_warn_size_above_one(&bunch);
+   PhotonBunch_warn_if_size_above_one(&bunch);
 
    if(DetectorSphere_is_hit_by_photon(&detector, &bunch)
       &&
