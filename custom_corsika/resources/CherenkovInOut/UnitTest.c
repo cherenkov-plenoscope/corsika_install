@@ -275,17 +275,18 @@ int main() {
 
     // MersenneTwister seeds
     {
+        struct MT19937 mt;
+        MT19937_init(&mt, 0);
+
         uint32_t pseudo_random_numbers[10];
-        MT19937_init(0);
-
         for(int i=0; i<10; i++)
-            pseudo_random_numbers[i] = MT19937_uint32();
+            pseudo_random_numbers[i] = MT19937_uint32(&mt);
 
-        uint32_t pseudo_random_numbers_2[10];
-        MT19937_init(0);      
+        MT19937_init(&mt, 0);
 
+        uint32_t pseudo_random_numbers_2[10];           
         for(int i=0; i<10; i++)
-            pseudo_random_numbers_2[i] = MT19937_uint32();
+            pseudo_random_numbers_2[i] = MT19937_uint32(&mt);
 
         for(int i=0; i<10; i++)
             expect_true(
@@ -296,13 +297,15 @@ int main() {
     }
 
     // MersenneTwister uniform mean
-    {   
+    {
         const int N = 1000*1000;
         double rns[N];
-        MT19937_init(0);
+
+        struct MT19937 mt;
+        MT19937_init(&mt, 0);
 
         for(int i=0; i<N; i++)
-            rns[i] = MT19937_uniform();
+            rns[i] = MT19937_uniform(&mt);
 
         double sum = 0.0;
         for(int i=0; i<N; i++)
