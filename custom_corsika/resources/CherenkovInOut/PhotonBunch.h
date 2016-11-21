@@ -72,4 +72,23 @@ void PhotonBunch_to_string(struct PhotonBunch* bunch, char* out) {
    strcat(out, ")");
 }
 
+void PhotonBunch_warn_size_above_one(struct PhotonBunch* bunch) {
+   if(bunch->size > 1.0) {
+      char bunch_str[4096];
+      PhotonBunch_to_string(bunch, bunch_str);
+      fprintf(
+         stderr, 
+         "Warning: Photon bunch size > 1.0 in %s\n", 
+         bunch_str
+      );
+   }
+}
+
+int PhotonBunch_reaches_observation_level(
+   struct PhotonBunch* bunch,
+   double random_uniform_0to1
+) {
+   return random_uniform_0to1 <= bunch->size;
+}
+
 #endif // __PhotonBunch_H_INCLUDED__ 

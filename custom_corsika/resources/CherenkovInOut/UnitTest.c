@@ -332,6 +332,34 @@ int main() {
         );
     }
 
+    // PhotonBunch reaching observation level
+    {
+        struct PhotonBunch bunch;
+        bunch.size = 1.0;
+        expect_true(__LINE__,
+            PhotonBunch_reaches_observation_level(&bunch, 0.5),
+            "100 percent probability to reach ground"
+        );
+
+        bunch.size = 0.5;
+        expect_true(__LINE__,
+            PhotonBunch_reaches_observation_level(&bunch, 0.5),
+            "PhotonBunch expected to reach ground"
+        );
+
+        bunch.size = 0.4;
+        expect_true(__LINE__,
+            !PhotonBunch_reaches_observation_level(&bunch, 0.5),
+            "PhotonBunch expected to not reach ground"
+        );
+
+        bunch.size = 0.0;
+        expect_true(__LINE__,
+            !PhotonBunch_reaches_observation_level(&bunch, 0.5),
+            "PhotonBunch expected to not reach ground"
+        );
+    }
+
     printf("\nCherenkovInOut UnitTests: Finished\n");
     return number_of_failed_tests;
 }
