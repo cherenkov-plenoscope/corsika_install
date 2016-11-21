@@ -176,13 +176,6 @@ void CherenkovInOut_open_photon_block(
    CherenkovInOut_assert_file_is_open(sane, sane->current_photons, photons_path);
 }
 
-void CherenkovInOut_append_photon_bunch(
-   struct CherenkovInOut* sane, 
-   struct PhotonBunch* bunch
-) {
-   fwrite(bunch, sizeof((*bunch)), 1, sane->current_photons);
-}
-
 void CherenkovInOut_append_photon(
    struct CherenkovInOut* sane, 
    struct OutputPhoton* photon
