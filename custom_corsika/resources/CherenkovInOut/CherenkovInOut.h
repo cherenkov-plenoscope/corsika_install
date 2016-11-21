@@ -86,10 +86,10 @@ void CherenkovInOut_write_readme(struct CherenkovInOut* sane) {
    "     uint8    _wavelength in nano meter [nm]\n"
    "              wavelength = (_wavelength/max_uint8)*(1e3) + 2e2\n"
    "\n"
+   "     uint8    mother particle electric charge [1]\n"
+   "\n"
    "     uint16   _emission_altitude above sea level (not above observation plane) [cm]\n"
    "              emission_altitude = (_emission_altitude/max_int16)*100*1e3*1e2\n"
-   "\n"
-   "     uint8    mother particle electric charge [1]\n"
    "\n"
    "     Total photon size is 2+2+2+2+4+1+2+1 = 16 bytes\n"
    "\n"
@@ -97,7 +97,6 @@ void CherenkovInOut_write_readme(struct CherenkovInOut* sane) {
    "To blame\n"
    "--------\n"
    "     Sebastian Achim Mueller, ETH Zurich 2016.\n";
-
 
    FILE* out;
    out = fopen(sane->readme_path, "w");
