@@ -4,7 +4,7 @@
 #include <string.h>
 
 #include "DetectorSphere.h"
-#include "MersenneTwister.h"
+#include "MT19937.h"
 
 int number_of_tests;
 int number_of_failed_tests;
@@ -308,11 +308,25 @@ int main() {
         for(int i=0; i<N; i++)
             sum = sum + rns[i];
 
-        double mean = sum/(double)N;
+        const double mean = sum/(double)N;
         expect_true(
             __LINE__, 
             fabs(mean - 0.5) < 1e-3,
-            "The mean of the uniform distribution should be close to 0.5");
+            "The mean of the uniform distribution should be close to 0.5"
+        );
+
+        double sum_var = 0.0;
+        for(int i=0; i<N; i++)
+            sum_var = sum_var + (rns[i] - mean)*(rns[i] - mean);
+
+        const double varianve = sum_var/((double)N - 1.0);
+        const double stddev = sqrt(varianve);
+
+        expect_true(
+            __LINE__, 
+            fabs(stddev - sqrt(1.0/12.0)) < 1e-3,
+            "The std dev of the uniform distribution should be close to sqrt(1/12)"
+        );
     }
 
     printf("\nCherenkovInOut UnitTests: Finished\n");
