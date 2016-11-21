@@ -415,6 +415,229 @@ int main() {
             round_to_nearest_int(1.6) == 2,
             "nearest integer 1.6 -> 2");
     }
+
+
+    // compress position
+    {
+        float orig_x = 1234.345; //cm
+        expect_true(__LINE__,
+            fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            "fine"
+        );
+
+        orig_x = 0.0;
+        expect_true(__LINE__,
+            fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+
+        orig_x = max_radius + 1;
+        expect_true(__LINE__,
+            !fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            "too large, will fail"
+        );
+
+        orig_x = max_radius - 1;
+        expect_true(__LINE__,
+            fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+
+        orig_x = -1234.345;
+        expect_true(__LINE__,
+            fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+
+        orig_x = -max_radius - 1;
+        expect_true(__LINE__,
+            !fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+
+
+        orig_x = -max_radius - 1;
+        expect_true(__LINE__,
+            !fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+
+        orig_x = -max_radius + 1;
+        expect_true(__LINE__,
+            fabs(orig_x - decompress_position(compress_position(orig_x))) < 0.9,
+            ""
+        );
+    }
+
+
+    // compress incident angle
+    {
+        float orig_cx = 0.923;
+        expect_true(__LINE__,
+            fabs(orig_cx - decompress_incident_direction(compress_incident_direction(orig_cx))) < 1e-5,
+            ""
+        );
+
+        orig_cx = -0.923;
+        expect_true(__LINE__,
+            fabs(orig_cx - decompress_incident_direction(compress_incident_direction(orig_cx))) < 1e-5,
+            ""
+        );
+
+        orig_cx = 0.0;
+        expect_true(__LINE__,
+            fabs(orig_cx - decompress_incident_direction(compress_incident_direction(orig_cx))) < 1e-5,
+            ""
+        );
+
+        orig_cx = 1.0;
+        expect_true(__LINE__,
+            fabs(orig_cx - decompress_incident_direction(compress_incident_direction(orig_cx))) < 1e-5,
+            ""
+        );
+    }
+
+
+    // compress wavelength
+    {
+        float orig_w = 366.53;
+        expect_true(__LINE__,
+            fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );
+
+        orig_w = 435.13;
+        expect_true(__LINE__,
+            fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );
+
+        orig_w = min_wavelength;
+        expect_true(__LINE__,
+            fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );
+
+        orig_w = min_wavelength - 1.0;
+        expect_true(__LINE__,
+            !fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );
+
+        orig_w = max_wavelength;
+        expect_true(__LINE__,
+            fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );
+
+        orig_w = max_wavelength + 1.0;
+        expect_true(__LINE__,
+            !fabs(orig_w - decompress_wavelength(compress_wavelength(orig_w))) < 2.0,
+            ""
+        );         
+    }
+
+    // compress wavelength
+    {
+        float orig_alt = min_emission_altidute;
+        expect_true(__LINE__,
+            fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = min_emission_altidute - 1.0;
+        expect_true(__LINE__,
+            !fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = max_emission_altidute;
+        expect_true(__LINE__,
+            !fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = max_emission_altidute + 1.0;
+        expect_true(__LINE__,
+            !fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = 24.355*1e3*1e2; //cm -> 25.355km
+        expect_true(__LINE__,
+            fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = 33.678*1e3*1e2; //cm -> 25.355km
+        expect_true(__LINE__,
+            fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+        orig_alt = 78.245*1e3*1e2; //cm -> 25.355km
+        expect_true(__LINE__,
+            fabs(orig_alt - decompress_emission_altitude(compress_emission_altitude(orig_alt))) < 100.0e2,
+            ""
+        );
+
+
+        // compress mother charge
+        {
+            float orig_c = -128;
+            expect_true(__LINE__,
+                fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = -128 -1;
+            expect_true(__LINE__,
+                !fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = +127;
+            expect_true(__LINE__,
+                fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = +127 + 1;
+            expect_true(__LINE__,
+                !fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = +1;
+            expect_true(__LINE__,
+                fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = 0;
+            expect_true(__LINE__,
+                fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+
+            orig_c = -1;
+            expect_true(__LINE__,
+                fabs(orig_c - decompress_mother_charge(compress_mother_charge(orig_c))) < 0.5,
+                ""
+            );
+        }
+
+
+        // Photon size
+        {
+            struct Photon photon;
+            expect_true(__LINE__,
+                sizeof(struct Photon) == 16,
+                ""
+            );
+            printf("\nPhoton size %d\n", (int)sizeof(struct Photon));
+        }
+    }
     printf("\nCherenkovInOut UnitTests: Finished\n");
     return number_of_failed_tests;
 }

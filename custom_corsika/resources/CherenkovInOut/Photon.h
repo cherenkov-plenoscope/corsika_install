@@ -2,97 +2,86 @@
 #define __CherenkovInOutPhoton_H_INCLUDED__
 
 #include <math.h>
+#include <stdint.h>
 
 //-------------------- Photon --------------------------------------------------
-short round_to_nearest_int(const float number) {
-   return number > 0 ? (short)(number + 0.5) : (short)(number - 0.5);
-}
-
 struct Photon{
-   short x;
-   short y;
-   short cx;
-   short cy;
-   short arrival_time;
-   short wavelength;
-   short emission_altitude;
-   short mother;
+   int16_t x;
+   int16_t y;
+   int16_t cx;
+   int16_t cy;
+   float arrival_time;
+   uint8_t wavelength;
+   int8_t mother_charge;
+   uint16_t emission_altitude;
 };
 
-const float MAXSHORT = 32768.0;
-
-short compress_position_to_short(const float pos) {
-   return round_to_nearest_int((pos/260.0e2)*MAXSHORT);
+int16_t round_to_nearest_int(const float number) {
+   return number > 0 ? (int16_t)(number + 0.5) : (int16_t)(number - 0.5);
 }
 
-short compress_slope_to_short(const float cx) {
-   return (short)(cx*MAXSHORT);
+const float max_int16 = 32767.0;
+const float max_uint8 = 255.0;
+const float max_radius = 260e2; //560m diameter -> 8mm
+const float max_emission_altidute = 100.0*1000.0*1.0e2; //100km -> 3.05m
+const float min_emission_altidute = 0.0; 
+const float max_relative_arrival_time = 3276.8; //ns -> 0.1ns
+const float max_wavelength = 1200; //nm 
+const float min_wavelength = 200; //nm
+
+
+int16_t compress_position(const float pos) {
+   return round_to_nearest_int((pos/max_radius)*max_int16);
+}
+float decompress_position(const int16_t pos) {
+   return ((float)pos/max_int16)*max_radius;
 }
 
-short compress_emission_altitude_to_short(float alt) {
+
+int16_t compress_incident_direction(const float cx) {
+   return round_to_nearest_int(cx*max_int16);
+}
+float decompress_incident_direction(const int16_t cx) {
+   return (float)cx/max_int16;
+}
+
+
+int16_t compress_emission_altitude(float alt) {
    alt = fabs(alt);
-   return round_to_nearest_int((alt/100000.0e2)*MAXSHORT);
+   return round_to_nearest_int((alt/max_emission_altidute)*max_int16);
+}
+float decompress_emission_altitude(const uint16_t alt) {
+   return ((float)alt/max_int16)*max_emission_altidute;
 }
 
-short compress_wavelength_to_short(float wavelength) {
 
+uint8_t compress_wavelength(float wavelength) {
+   wavelength = fabs(wavelength);
+   float out = (wavelength - min_wavelength)/(max_wavelength - min_wavelength)*max_uint8;
+   return round_to_nearest_int(out);
+}
+float decompress_wavelength(const uint8_t wavelength) {
+   return ((float)wavelength/max_uint8)*(max_wavelength - min_wavelength) + min_wavelength;
 }
 
-short compress_mother_to_short(const float mass, const float charge) {
-   return 1;
+
+int8_t compress_mother_charge(const float charge) {
+   return round_to_nearest_int(charge);
 }
+float decompress_mother_charge(const int8_t charge) {
+   return (float)charge;
+}
+
 
 void Photon_init_from_bunch(struct Photon* photon, const struct Bunch* bunch) {
-   photon->x = compress_position_to_short(bunch->x);
-   photon->y = compress_position_to_short(bunch->y);
-   photon->cx = compress_slope_to_short(bunch->cx);
-   photon->cy = compress_slope_to_short(bunch->cy);
-   photon->wavelength = (short)(bunch->wavelength*MAXSHORT);
+   photon->x = compress_position(bunch->x);
+   photon->y = compress_position(bunch->y);
+   photon->cx = compress_incident_direction(bunch->cx);
+   photon->cy = compress_incident_direction(bunch->cy);
+   photon->arrival_time = bunch->arrival_time;
+   photon->wavelength = compress_wavelength(bunch->wavelength);
+   photon->emission_altitude = compress_emission_altitude(bunch->emission_altitude);
+   photon->mother_charge = compress_emission_altitude(bunch->mother_charge);
 }
-
-
-/*void Photon_init_from_bunch(
-   struct PhotonBunch* bunch, 
-   struct CherenkovInOut* cerio, 
-   struct DetectorSphere* detector
-) {
-   const double time_offset = cerio->time_offset;
-   const double speed_of_light = cerio->speed_of_light_in_air_on_observation_level;
-
-   struct Photon photon;
-   photon.x = compress_position_to_short(bunch->x);
-   photon.y = compress_position_to_short(bunch->y);
-   photon.cx = compress_slope_to_short(bunch->cx);
-   photon.cy = compress_slope_to_short(bunch->cy);
-   photon.wavelength = (short)(bunch->wavelength*MAXSHORT);
-   photon.arrival_time = bunch->arrival_time - 
-           detector->z*sqrt(1.+bunch->cx*bunch->cx+bunch->cy*bunch->cy)/speed_of_light - time_offset;
-
-   photon.emission_altitude = compress_emission_altitude_to_short(bunch->emission_altitude);
-
-   return photon;
-}*/
-/*
-cbunch = &det->cbunch[det->next_bunch];
-//@ The bunch size has a limited range of up to 327 photons.
-cbunch->photons = (short)(100.*photons+0.5);
-//@ Positions have a limited range of up to 32.7 m from the detector centre
-cbunch->x       = (short)Nint(10.*(x - sx*det->z0 - det->x0));
-cbunch->y       = (short)Nint(10.*(y - sy*det->z0 - det->y0));
-//@ No limits in the direction (accuracy 7 arcsec for vertical showers)
-cbunch->cx      = (short)Nint(30000.*cx);
-cbunch->cy      = (short)Nint(30000.*cy);
-//@ The time has a limited range of +-3.27 microseconds.
-cbunch->ctime   = (short)Nint(10.*(ctime - 
-        det->z0*sqrt(1.+sx*sx+sy*sy)/airlightspeed - toffset));
-cbunch->log_zem = (short)(1000.*log10(zem)+0.5);
-if ( lambda == 0. )     // Unspecified wavelength of photons
-   cbunch->lambda = (short)0;
-else if ( lambda < 0. ) // Photo-electrons instead of photons
-   cbunch->lambda = (short)(lambda-0.5);
-else                    // Photons of specific wavelength
-   cbunch->lambda = (short)(lambda+0.5);
-det->next_bunch++;
-*/
 
 #endif // __CherenkovInOutPhoton_H_INCLUDED__ 
