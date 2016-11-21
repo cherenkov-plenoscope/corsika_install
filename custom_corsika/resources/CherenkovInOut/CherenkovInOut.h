@@ -178,7 +178,7 @@ void CherenkovInOut_open_photon_block(
 
 void CherenkovInOut_append_photon(
    struct CherenkovInOut* sane, 
-   struct OutputPhoton* photon
+   struct Photon* photon
 ) {
    fwrite(photon, sizeof((*photon)), 1, sane->current_photons);
 }
