@@ -78,14 +78,15 @@ extern double refidx_ (double *height);
 #include "CherenkovInOut/CherenkovInOut.h"
 #include "CherenkovInOut/DetectorSphere.h"
 #include "CherenkovInOut/OutputPhoton.h"
+#include "CherenkovInOut/MT19937.h"
 
 //-------------------- init ----------------------------------------------------
-int SEED = -1;
 char output_path[1024] = "";
 int number_of_detectors = 0;
 
 struct DetectorSphere detector;
 struct CherenkovInOut cerio;
+struct MT19937 prng;
 
 //-------------------- CORSIKA bridge ------------------------------------------
 
@@ -135,7 +136,9 @@ void telset_ (
  *  @return (none)
 */
 void telrnh_ (cors_real_t runh[273]) {
-   SEED = (int)runh[(11+3*1)-1];
+   uint32_t seed = (int)runh[(11+3*1)-1];
+   MT19937_init(&prng, seed);
+
    CherenkovInOut_init(&cerio, output_path);
    CherenkovInOut_write_runh(&cerio, runh);
 }
@@ -202,11 +205,16 @@ int telout_ (
    bunch.cy = *pv;
    bunch.arrival_time = *ctime;
    bunch.emission_altitude = *zem; 
-   bunch.wavelength = fabs(*lambda);
+   bunch.wavelength = *lambda;
    bunch.mother_mass = *amass;
-   bunch.mother_charge = *charge; 
+   bunch.mother_charge = *charge;
 
-   if(DetectorSphere_is_hit_by_photon(&detector, &bunch)) {
+   PhotonBunch_warn_size_above_one(&bunch);
+
+   if(DetectorSphere_is_hit_by_photon(&detector, &bunch)
+      &&
+      PhotonBunch_reaches_observation_level(&bunch, MT19937_uniform(&prng))
+   ) {
       DetectorSphere_transform_to_detector_frame(&detector, &bunch);
       CherenkovInOut_append_photon_bunch(&cerio, &bunch);
    }
