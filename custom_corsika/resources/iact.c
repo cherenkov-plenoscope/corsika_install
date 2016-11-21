@@ -123,9 +123,13 @@ void telset_ (
 
    if(number_of_detectors > 1) {
       fprintf(stderr, "ABORT: There must only be 1 telescope.\n");
-      exit(1);      
+      exit(1);
    }
 
+   if((*x) != 0.0 || (*y) != 0.0 || (*z) != 0.0) {
+      fprintf(stderr, "ABORT: Telescopes must not have any offset in x,y,z in this CherenkovInOut version.\n");
+      exit(1);
+   }
 }
 
 
@@ -216,7 +220,12 @@ int telout_ (
       Bunch_reaches_observation_level(&bunch, MT19937_uniform(&prng))
    ) {
       DetectorSphere_transform_to_detector_frame(&detector, &bunch);
-      CherenkovInOut_append_photon(&cerio, &bunch);
+
+
+      struct Photon photon;
+      Photon_init_from_bunch(&photon, &bunch);
+
+      CherenkovInOut_append_photon(&cerio, &photon);
    }
    return 0;
 }
