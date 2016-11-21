@@ -1,6 +1,6 @@
 import numpy as np
 
-photon_dtype = np.dtype([
+compressed_photon_dtype = np.dtype([
    ('x', np.int16),
    ('y', np.int16),
    ('cx', np.int16),
@@ -12,11 +12,10 @@ photon_dtype = np.dtype([
 ])
 
 def read_compressed_photons(path):
-    return np.fromfile(path, dtype=photon_dtype)
+    return np.fromfile(path, dtype=compressed_photon_dtype)
 
 def decompress_photons(comp):
     photons = np.zeros(shape=(comp.shape[0] ,8), dtype=np.float32)
-
     int16max = 32767.0
     int8max = 255.0
     photons[:,0] = (comp['x']/int16max)*260.0e2
