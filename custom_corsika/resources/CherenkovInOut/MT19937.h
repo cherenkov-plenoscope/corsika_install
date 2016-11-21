@@ -1,5 +1,5 @@
-#ifndef __MT19937_H_INCLUDED__
-#define __MT19937_H_INCLUDED__
+#ifndef __CherenkovInOutMT19937_H_INCLUDED__
+#define __CherenkovInOutMT19937_H_INCLUDED__
 
 #include <stdint.h>
 
@@ -101,4 +101,4 @@ double MT19937_uniform(struct MT19937* mt) {
     return rn/max_uint32;
 }
 
-#endif // __MT19937_H_INCLUDED__ 
+#endif // __CherenkovInOutMT19937_H_INCLUDED__ 

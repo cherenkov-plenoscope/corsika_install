@@ -1,5 +1,5 @@
-#ifndef __DetectorSphere_H_INCLUDED__
-#define __DetectorSphere_H_INCLUDED__
+#ifndef __CherenkovInOutDetectorSphere_H_INCLUDED__
+#define __CherenkovInOutDetectorSphere_H_INCLUDED__
 
 // forward declared dependencies
 
@@ -82,7 +82,7 @@ void DetectorSphere_transform_to_detector_frame(
    bunch->y = bunch->y - sphere->y - Bunch_slope_y(bunch)*sphere->z;
 }
 
-#endif // __DetectorSphere_H_INCLUDED__ 
+#endif // __CherenkovInOutDetectorSphere_H_INCLUDED__ 
 
 /*
    bunch->size    = size;
