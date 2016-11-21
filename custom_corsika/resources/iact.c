@@ -216,7 +216,7 @@ int telout_ (
       Bunch_reaches_observation_level(&bunch, MT19937_uniform(&prng))
    ) {
       DetectorSphere_transform_to_detector_frame(&detector, &bunch);
-      CherenkovInOut_append_photon_bunch(&cerio, &bunch);
+      CherenkovInOut_append_photon(&cerio, &bunch);
    }
    return 0;
 }
